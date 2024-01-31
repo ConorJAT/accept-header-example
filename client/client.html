@@ -24,6 +24,40 @@
     }
   </style>
   <script>
+    const handleResponse = (response) => {
+      response.text().then(responseText => {
+        console.log(responseText);
+
+        const contentType = response.headers.get('Content-Type');
+        const content = document.getElementById('content');
+        content.appendChild(document.createElement('hr'));
+
+        const h1 = document.createElement('h1');      // Cat Name
+        const p = document.createElement('p');        // Cat Age
+        const h2 = document.createElement('h2');      // Content Type
+        const rawData = document.createElement('p');  // Raw Data
+
+        h2.innerText = contentType;
+        rawData.innerText = responseText;
+
+        if(contentType === 'text/xml') {
+          let parsedXML = new window.DOMParser().parseFromString(responseText, 'text/xml');
+          h1.innerText = parsedXML.querySelector('name').textContent;
+          p.innerText = parsedXML.querySelector('age').textContent;
+
+        } else if (contentType === 'application/json') {
+          let parsedData = JSON.parse(responseText);
+          h1.innerText = parsedData.name;
+          p.innerText = parsedData.age;
+        }
+
+        content.appendChild(h1);
+        content.appendChild(p);
+        content.appendChild(h2);
+        content.appendChild(rawData);
+      });
+    };
+
     const sendFetchRequest = (url, acceptedType) => {
       const options = {
         method: 'GET',
@@ -33,9 +67,7 @@
       };
       
       const fetchPromise = fetch(url, options);
-      fetchPromise.then((response) => {
-        console.log(response);
-      });
+      fetchPromise.then(handleResponse);
 
       console.log('Fetch request running...');
     };

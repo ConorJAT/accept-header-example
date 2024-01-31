@@ -13,7 +13,31 @@ const getIndex = (request, response) => {
 };
 
 const getCats = (request, response, acceptedTypes) => {
-  console.log(acceptedTypes);
+  const cat = {
+    name: 'Garfield',
+    age: 10
+  };
+
+  /*
+    <response>
+      <name>Garfield</name>
+      <age>10</age>
+    </response>
+  */
+
+  if(acceptedTypes[0] === 'text/xml'){
+    // Return XML, upon request.
+    let xmlString = '<response>';
+    xmlString += `<name>${cat.name}</name>`;
+    xmlString += `<age>${cat.age}</age>`;
+    xmlString += '</response>';
+    
+    return respond(request, response, xmlString, 'text/xml');
+  }
+
+  // Return JSON, by default.
+  const catString = JSON.stringify(cat);
+  return respond(request, response, catString, 'application/json');
 };
 
 module.exports = {
